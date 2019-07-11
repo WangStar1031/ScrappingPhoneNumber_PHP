@@ -28,9 +28,7 @@ function getPhoneNumber($_strPageContents){
 	return $strRet;
 }
 function getAllUrlsFromList($_listPageContents){
-	// print_r($_listPageContents);
 	$html = str_get_html($_listPageContents);
-	// print_r($html);
 	$records = $html->find("article.search-result");
 	$arrRet = [];
 	if( !$records)return $arrRet;
@@ -40,7 +38,6 @@ function getAllUrlsFromList($_listPageContents){
 	return $arrRet;
 }
 $fileName = $categoryId . "_" . $pageFrom . "_" . $pageTo . ".csv";
-// $fileName = "contacts_" . $pageFrom . "_" . $pageTo . ".csv";
 file_put_contents($fileName, "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Language,Photo,Group Membership,Phone 1 - Type,Phone 1 - Value");
 switch ($categoryId) {
 	case 628:
@@ -82,7 +79,6 @@ for( $i = $pageFrom; $i <= $pageTo; $i++){
 	if( !$contents)
 		continue;
 	$pageUrls4Scrape = getAllUrlsFromList($contents);
-	// print_r($pageUrls4Scrape);
 	foreach ($pageUrls4Scrape as $pageUrl) {
 		$pageContents = @file_get_contents($pageUrl);
 		if( $pageContents == "")
@@ -102,25 +98,7 @@ for( $i = $pageFrom; $i <= $pageTo; $i++){
 	}
 
 }
-// exit();
-// $contents = file_get_contents("https://www.marktplaats.nl/a/kleding-dames/jassen-zomer/m1432768838-bomber-jack.html?c=efb2ef4dc323389c4f92ed10afa33e3a&amp;previousPage=lr");
-// $arrContents = explode("sellerPhone:", $contents);
-// if( count($arrContents) > 1){
-// 	$strBuf = $arrContents[1];
-// 	$strTemp = trim( explode(",", $strBuf)[0]);
-// 	$strTemp = trim( str_replace("'", "", $strTemp));
-// 	$strTemp = str_replace("\n", "", $strTemp);
-// 	echo $strTemp;
-// }
-// echo getPhoneNumber($contents);
-// exit();
-// echo $contents;
-// https://www.marktplaats.nl/z/kleding-dames/blouses-en-tunieken.html?categoryId=628&attributes=S%2C31&attributes=S%2C4941&attributes=S%2C35&startDateFrom=always
-
-// https://www.marktplaats.nl/z/kleding-dames/blouses-en-tunieken/gedragen-ophalen-of-verzenden-zo-goed-als-nieuw.html?categoryId=628&attributes=S%2C4941+S%2C35+S%2C31&currentPage=2
-
-// https://www.marktplaats.nl/z/kleding-dames/blouses-en-tunieken/gedragen-ophalen-of-verzenden-zo-goed-als-nieuw.html?categoryId=628&attributes=S%2C4941+S%2C35+S%2C31&currentPage=3
-
+// Sample url : http://localhost/phone_check/?categoryId=630&from=1&to=167
 ?>
 
 <a id="donwload" href="<?=$fileName?>" donwload></a>
