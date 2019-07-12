@@ -39,42 +39,40 @@ function getAllUrlsFromList($_listPageContents){
 }
 $fileName = $categoryId . "_" . $pageFrom . "_" . $pageTo . ".csv";
 file_put_contents($fileName, "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Language,Photo,Group Membership,Phone 1 - Type,Phone 1 - Value");
+$list_url = "";
+$url_prefix = "";
+$url_last = "";
 switch ($categoryId) {
 	case 628:
 		$pageTo = $pageTo > 167 ? 167 : $pageTo;
+		$url_prefix = "https://www.marktplaats.nl/z/kleding-dames/blouses-en-tunieken/gedragen-ophalen-of-verzenden-zo-goed-als-nieuw.html?categoryId=";
+		$url_last = "&attributes=S%2C4941+S%2C35+S%2C31&currentPage=";
 		break;
 	case 642:
 		$pageTo = $pageTo > 167 ? 167 : $pageTo;
+		$url_prefix = "https://www.marktplaats.nl/z/kleding-heren/schoenen/gedragen-ophalen-of-verzenden-zo-goed-als-nieuw.html?categoryId=";
+		$url_last = "&attributes=S%2C4941+S%2C35+S%2C31&currentPage=";
 		break;
 	case 2784:
 		$pageTo = $pageTo > 106 ? 106 : $pageTo;
+		$url_prefix = "https://www.marktplaats.nl/z/kleding-dames/jassen-winter/gedragen-ophalen-of-verzenden-zo-goed-als-nieuw.html?categoryId=";
+		$url_last = "&attributes=S%2C4941+S%2C35+S%2C31&currentPage=";
 		break;
 	case 630:
 		$pageTo = $pageTo > 167 ? 167 : $pageTo;
+		$url_prefix = "https://www.marktplaats.nl/z/kleding-dames/jassen-zomer/gedragen-ophalen-of-verzenden-zo-goed-als-nieuw.html?categoryId=";
+		$url_last = "&attributes=S%2C4941+S%2C35+S%2C31&currentPage=";
 		break;
 	
 	default:
 		# code...
 		break;
 }
-$list_url = "";
 for( $i = $pageFrom; $i <= $pageTo; $i++){
 	echo "<br>" . $i . "<br>";
 	file_put_contents("working_" . $categoryId . ".txt", $i);
-	switch ($categoryId) {
-		case 628:
-			$list_url = "https://www.marktplaats.nl/z/kleding-dames/blouses-en-tunieken/gedragen-ophalen-of-verzenden-zo-goed-als-nieuw.html?categoryId=" . $categoryId . "&attributes=S%2C4941+S%2C35+S%2C31&currentPage=" . $i;
-			break;
-		case 642:
-			$list_url = "https://www.marktplaats.nl/z/kleding-heren/schoenen/gedragen-ophalen-of-verzenden-zo-goed-als-nieuw.html?categoryId=" . $categoryId . "&attributes=S%2C4941+S%2C35+S%2C31&currentPage=" . $i;
-			break;
-		case 2784:
-			$list_url = "https://www.marktplaats.nl/z/kleding-dames/jassen-winter/gedragen-ophalen-of-verzenden-zo-goed-als-nieuw.html?categoryId=" . $categoryId . "&attributes=S%2C4941+S%2C35+S%2C31&currentPage=" . $i;
-			break;
-		case 630:
-			$list_url = "https://www.marktplaats.nl/z/kleding-dames/jassen-zomer/gedragen-ophalen-of-verzenden-zo-goed-als-nieuw.html?categoryId=" . $categoryId . "&attributes=S%2C4941+S%2C35+S%2C31&currentPage=" . $i;
-			break;
-	}
+	$list_url = $url_prefix . $categoryId . $url_last . $i;
+	
 	$contents = file_get_contents($list_url);
 	if( !$contents)
 		continue;
