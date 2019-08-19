@@ -16,6 +16,10 @@ $categoryId = 628;
 if( isset($_GET['categoryId'])){
 	$categoryId = $_GET['categoryId'];
 }
+$subCatId = 0;
+if( isset($_GET['subCatId'])){
+	$subCatId = $_GET['subCatId'];
+}
 
 function getPhoneNumber($_strPageContents){
 	$arrContents = explode("sellerPhone", $_strPageContents);
@@ -37,11 +41,24 @@ function getAllUrlsFromList($_listPageContents){
 	}
 	return $arrRet;
 }
-$fileName = $categoryId . "_" . $pageFrom . "_" . $pageTo . ".csv";
-file_put_contents($fileName, "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Language,Photo,Group Membership,Phone 1 - Type,Phone 1 - Value");
+function getAllUrlsFromList4Search($_listPageContents){
+	$html = str_get_html($_listPageContents);
+	$records = $html->find("li.mp-Listing--list-item a");
+	$arrRet = [];
+	if( !$records)return $arrRet;
+	foreach ($records as $value) {
+		$curUrl = "https://www.marktplaats.nl" . $value->getAttribute("href");
+		if( !in_array( $curUrl, $arrRet)){
+			$arrRet[] = $curUrl;
+		}
+	}
+	return $arrRet;
+}
 $list_url = "";
 $url_prefix = "";
 $url_last = "";
+$url_endings = "";
+$is_Search = false;
 switch ($categoryId) {
 	case 628:
 		$pageTo = $pageTo > 167 ? 167 : $pageTo;
@@ -63,25 +80,57 @@ switch ($categoryId) {
 		$url_prefix = "https://www.marktplaats.nl/z/kleding-dames/jassen-zomer/gedragen-ophalen-of-verzenden-zo-goed-als-nieuw.html?categoryId=";
 		$url_last = "&attributes=S%2C4941+S%2C35+S%2C31&currentPage=";
 		break;
+	case 31:
+		$is_Search = true;
+		$pageTo = $pageTo > 157 ? 157 : $pageTo;
+		$url_prefix = "https://www.marktplaats.nl/l/audio-tv-en-foto/fotografie-camera-s-digitaal/f/zo-goed-als-nieuw/";
+		$url_endings = "/#f:35,32|searchInTitleAndDescription:false";
+		break;
+	case 32:
+		$is_Search = true;
+		$url_prefix = "https://www.marktplaats.nl/l/telecommunicatie/mobiele-telefoons-apple-iphone/f/gebruikt/";
+		switch ($subCatId) {
+			case 0:
+				$pageTo = $pageTo > 7 ? 7 : $pageTo;
+				$url_endings = "/#f:11345,35|searchInTitleAndDescription:false";
+				break;
+			case 1: 
+				$url_endings = "/#f:35,11604|searchInTitleAndDescription:false";
+				$pageTo = $pageTo > 12 ? 12 : $pageTo;
+				break;
+		}
+		break;
 	
 	default:
 		# code...
 		break;
 }
+
+$fileName = $categoryId . "_" . $subCatId . "_" . $pageFrom . "_" . $pageTo . ".csv";
+file_put_contents($fileName, "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Language,Photo,Group Membership,Phone 1 - Type,Phone 1 - Value");
+
 for( $i = $pageFrom; $i <= $pageTo; $i++){
 	echo "<br>" . $i . "<br>";
-	file_put_contents("working_" . $categoryId . ".txt", $i);
-	$list_url = $url_prefix . $categoryId . $url_last . $i;
+	file_put_contents("working_" . $categoryId . "_" . $subCatId . ".txt", $i);
+	$list_url = $url_prefix . $categoryId . $url_last . $i . $url_endings;
 	
 	$contents = file_get_contents($list_url);
 	if( !$contents)
 		continue;
-	$pageUrls4Scrape = getAllUrlsFromList($contents);
+	$pageUrls4Scrape = [];
+	if( $is_Search == false){
+		$pageUrls4Scrape = getAllUrlsFromList($contents);
+	} else{
+		$pageUrls4Scrape = getAllUrlsFromList4Search($contents);
+	}
+	// print_r( $pageUrls4Scrape);
 	foreach ($pageUrls4Scrape as $pageUrl) {
 		$pageContents = @file_get_contents($pageUrl);
 		if( $pageContents == "")
 			continue;
 		$pageHtml = str_get_html($pageContents);
+		if( count($pageHtml->find("#title") ) == 0)
+			continue;
 		$mainName = $pageHtml->find("#title")[0]->text();
 		$price = $pageHtml->find("span.price")[0]->text();
 		$phoneNumber = getPhoneNumber($pageContents);
