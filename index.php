@@ -140,13 +140,15 @@ switch ($categoryId) {
 		# code...
 		break;
 }
-
-$fileName = $categoryId . "_" . $subCatId . "_" . $pageFrom . "_" . $pageTo . ".csv";
+if( !file_exists(__DIR__ . "/results/")){
+	mkdir(__DIR__ . "/results/");
+}
+$fileName = __DIR__ . "/results/" . $categoryId . "_" . $subCatId . "_" . $pageFrom . "_" . $pageTo . ".csv";
 file_put_contents($fileName, "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Language,Photo,Group Membership,Phone 1 - Type,Phone 1 - Value");
 
 for( $i = $pageFrom; $i <= $pageTo; $i++){
 	echo "<br>" . $i . "<br>";
-	file_put_contents("working_" . $categoryId . "_" . $subCatId . ".txt", $i);
+	file_put_contents(__DIR__ . "/results/working_" . $categoryId . "_" . $subCatId . ".txt", $i);
 	$list_url = $url_prefix . $categoryId . $url_last . $i . $url_endings;
 	
 	$contents = file_get_contents($list_url);
