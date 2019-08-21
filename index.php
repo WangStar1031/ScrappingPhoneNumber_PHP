@@ -4,11 +4,11 @@ error_reporting();
 
 require_once "simple_html_dom.php";
 
-$pageFrom = 2;
+$pageFrom = 1;
 if( isset($_GET['from'])){
 	$pageFrom = $_GET['from'];
 }
-$pageTo = 2;
+$pageTo = 10000;
 if( isset($_GET['to'])){
 	$pageTo = $_GET['to'];
 }
@@ -80,6 +80,41 @@ switch ($categoryId) {
 		$url_prefix = "https://www.marktplaats.nl/z/kleding-dames/jassen-zomer/gedragen-ophalen-of-verzenden-zo-goed-als-nieuw.html?categoryId=";
 		$url_last = "&attributes=S%2C4941+S%2C35+S%2C31&currentPage=";
 		break;
+	case 771:
+		$pageTo = $pageTo > 4 ? 4 : $pageTo;
+		$url_prefix = "https://www.marktplaats.nl/z/muziek-en-instrumenten/blaasinstrumenten-klarinetten/ophalen-of-verzenden.html?categoryId=";
+		$url_last = "&attributes=S%2C35&currentPage=";
+		break;
+	case 1766: // done
+		$pageTo = $pageTo > 9 ? 9 : $pageTo;
+		$url_prefix = "https://www.marktplaats.nl/z/muziek-en-instrumenten/blaasinstrumenten-saxofoons/ophalen-of-verzenden.html?categoryId=";
+		$url_last = "&attributes=S%2C35&currentPage=";
+		break;
+	case 247:
+		$pageTo = $pageTo > 95 ? 95 : $pageTo;
+		$url_prefix = "https://www.marktplaats.nl/z/doe-het-zelf-en-verbouw/gereedschap-handgereedschap/ophalen-of-verzenden-gebruikt-zo-goed-als-nieuw.html?categoryId=";
+		$url_last = "&attributes=S%2C35+S%2C32+S%2C31&currentPage=";
+		break;
+	case 1882:
+		$pageTo = $pageTo > 167 ? 167 : $pageTo;
+		$url_prefix = "https://www.marktplaats.nl/z/boeken/geschiedenis-wereld/ophalen-of-verzenden.html?categoryId=";
+		$url_last = "&attributes=S%2C35&currentPage=";
+		break;
+	case 1953:
+		$pageTo = $pageTo > 85 ? 85 : $pageTo;
+		$url_prefix = "https://www.marktplaats.nl/z/telecommunicatie/mobiele-telefoons-apple-iphone/zonder-abonnement-zonder-simlock-ophalen-of-verzenden-gebruikt-zo-goed-als-nieuw.html?categoryId=";
+		$url_last = "&attributes=S%2C6864+S%2C6862+S%2C35+S%2C32+S%2C31&currentPage=";
+		break;
+	case 2:	// done
+		$pageTo = $pageTo > 167 ? 167 : $pageTo;
+		$url_prefix = "https://www.marktplaats.nl/z/antiek-en-kunst/antiek-bestek/ophalen-of-verzenden.html?categoryId=";
+		$url_last = "&attributes=S%2C35&currentPage=";
+		break;
+	case 487:	//done
+		$pageTo = $pageTo > 160 ? 160 : $pageTo;
+		$url_prefix = "https://www.marktplaats.nl/z/audio-tv-en-foto/fotografie-camera-s-digitaal/ophalen-of-verzenden-gebruikt-zo-goed-als-nieuw.html?categoryId=";
+		$url_last = "&attributes=S%2C35+S%2C32+S%2C31&currentPage=";
+		break;
 	case 31:
 		$is_Search = true;
 		$pageTo = $pageTo > 157 ? 157 : $pageTo;
@@ -129,7 +164,7 @@ for( $i = $pageFrom; $i <= $pageTo; $i++){
 		if( $pageContents == "")
 			continue;
 		$pageHtml = str_get_html($pageContents);
-		if( count($pageHtml->find("#title") ) == 0)
+		if( count($pageHtml->find("#title") ) == 0 || count($pageHtml->find("span.price") ) == 0)
 			continue;
 		$mainName = $pageHtml->find("#title")[0]->text();
 		$price = $pageHtml->find("span.price")[0]->text();
@@ -160,7 +195,7 @@ foreach ($arrContents as $value) {
 		$arrRealContents[] = $value;
 	}
 }
-file_put_contents($srcFileName, implode(PHP_EOL, $arrRealContents));
+file_put_contents($fileName, implode(PHP_EOL, $arrRealContents));
 // Sample url : http://localhost/phone_check/?categoryId=630&from=1&to=167
 ?>
 
